@@ -1,17 +1,18 @@
-var SimpleStorage = artifacts.require("./SimpleStorage.sol");
+var Collateral = artifacts.require("Collateral");
+const Web3 = require('web3');
 
-contract('SimpleStorage', function(accounts) {
+const web3 = new Web3("http://localhost:8545");
 
-  it("...should store the value 89.", function() {
-    return SimpleStorage.deployed().then(function(instance) {
-      simpleStorageInstance = instance;
+contract('Collateral', async (accounts) => {
 
-      return simpleStorageInstance.set(89, {from: accounts[0]});
-    }).then(function() {
-      return simpleStorageInstance.get.call();
-    }).then(function(storedData) {
-      assert.equal(storedData, 89, "The value 89 was not stored.");
-    });
+  it("test collateral.", async () => {
+    const latestAccounts = await web3.eth.getAccounts();
+
+    const CollateralInstance = await Collateral.deployed();
+    console.log(CollateralInstance,"aassAS");
+     const value = web3.utils.toWei('1', 'ether');
+     await CollateralInstance.depositCollateral({ from: latestAccounts[0], value: value });
+
   });
 
 });
