@@ -9,9 +9,10 @@ contract('Collateral', async (accounts) => {
     const latestAccounts = await web3.eth.getAccounts();
 
     const CollateralInstance = await Collateral.deployed();
-    console.log(CollateralInstance,"aassAS");
-     const value = web3.utils.toWei('1', 'ether');
-     await CollateralInstance.depositCollateral({ from: latestAccounts[0], value: value });
+    const value = web3.utils.toWei('1', 'ether');
+    await CollateralInstance.depositCollateral({ from: latestAccounts[0], value: value });
+    const balance = await CollateralInstance.collateralAmountByAddress.call(latestAccounts[0]);
+    assert.equal(balance, value);
 
   });
 
