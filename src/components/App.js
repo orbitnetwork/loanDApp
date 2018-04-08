@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import {Jumbotron} from 'react-bootstrap';
+import { Jumbotron } from 'react-bootstrap';
 import Form from './Form';
 import Info from './Info';
 import './App.css'
+import CollateralABI from '../../build/contracts/Collateral.json';
 
 import web3 from '../web3';
 
@@ -19,14 +20,53 @@ class App extends Component {
     super(props)
 
     this.state = {
-      address:'0xa....',
-      balance:'2'
+      address: '0xa....',
+      balance: '',
+      CollateralInstance: '',
+      accounts: ''
     }
 
   }
 
-  componentDidMount() {
-   
+  async componentDidMount() {
+    const contract = require('truffle-contract');
+    const Collateral = contract(CollateralABI);
+    Collateral.setProvider(web3.currentProvider);
+
+    const accounts = await web3.eth.getAccounts();
+    const CollateralInstance = await Collateral.deployed();
+    this.setState((prevState) => {
+      return {
+        CollateralInstance
+      }
+    })
+
+    this.setState((prevState) => {
+      return {
+        address: accounts[0]
+      }
+    })
+    this.getBalance(accounts[0]);
+  }
+
+
+  getBalance = async (address) => {
+    const { CollateralInstance } = this.state;
+    const balance = await CollateralInstance.collateralAmountByAddress.call(address);
+    console.log(web3.utils.fromWei(balance.toString()));
+    this.setState((prevState) => {
+      return {
+        balance: web3.utils.fromWei(balance.toString(), 'ether')
+      }
+    })
+  }
+  depositCollateral = async (value) => {
+    console.log(`vaaaaaa${value}`);
+    const { CollateralInstance, address } = this.state;
+    const valueInWei = web3.utils.toWei(value, 'ether');
+    console.log(CollateralInstance, address);
+    await CollateralInstance.depositCollateral({from: address, value:valueInWei})
+    this.getBalance(address)
   }
 
   instantiateContract() {
@@ -67,7 +107,7 @@ class App extends Component {
         <div style={{ textAlign: "center", marginTop: "5%" }}>
           <Jumbotron style={styles.jumboStyle}>
             <Info address={this.state.address} balance={this.state.balance} />
-            <Form />
+            <Form depositCollateral={this.depositCollateral} />
           </Jumbotron>
         </div>
       </div>

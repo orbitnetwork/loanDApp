@@ -10,6 +10,7 @@ import {
 
 import web3 from "../web3";
 import SubmitButton from "./SubmitButton";
+import CollateralABI from '../../build/contracts/Collateral.json';
 
 const styles = {
   wellStyle: {
@@ -28,6 +29,11 @@ class Form extends Component {
     isLoading: false
   };
 
+  async componentDidMount() {
+
+  }
+
+
   getValidationState = () => {
     const value = this.state.value;
     if (/[a-zA-Z]+$/.test(value)) return "error";
@@ -40,7 +46,8 @@ class Form extends Component {
 
   onSubmit = async event => {
     event.preventDefault();
-    const accounts = await web3.eth.getAccounts();
+    this.props.depositCollateral(this.state.value)
+
   };
 
   render() {

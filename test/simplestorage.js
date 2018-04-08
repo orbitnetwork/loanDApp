@@ -14,6 +14,7 @@ contract('Collateral', async (accounts) => {
     const balance = await CollateralInstance.collateralAmountByAddress.call(latestAccounts[0]);
     assert.equal(balance, value);
 
-  });
+  })
 
 });
+    
